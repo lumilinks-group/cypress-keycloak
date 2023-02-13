@@ -8,7 +8,7 @@
   "description": "Cypress commands for Keycloak",
   "repository": "git://github.com/babangsund/cypress-keycloak.git",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build": "rollup -c",
     "watch": "NODE_ENV=development rollup -c -w",
     "prettier": "prettier --write src/**",
     "lint": "eslint src/"

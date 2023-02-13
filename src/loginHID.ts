@@ -1,0 +1,64 @@
+import createUUID from './createUUID';
+
+Cypress.Commands.add(
+  'loginHID',
+  ({
+    root,
+    realm,
+    username,
+    password,
+    client_id,
+    redirect_uri,
+    path_prefix = 'auth',
+    kc_idp_hint,
+  }) =>
+    cy
+      .request({
+        url: `${root}${
+          path_prefix ? `/${path_prefix}` : ''
+        }/realms/${realm}/protocol/openid-connect/auth`,
+        qs: {
+          client_id,
+          redirect_uri,
+          kc_idp_hint,
+          scope: 'openid',
+          state: createUUID(),
+          nonce: createUUID(),
+          response_type: 'code',
+          response_mode: 'fragment',
+        },
+      })
+      .then((response) => {
+        const html = document.createElement('html');
+        html.innerHTML = response.body;
+
+        const form = html.getElementsByTagName('form');
+        const isAuthorized = !form.length;
+
+        if (!isAuthorized)
+          return cy.request({
+            form: true,
+            method: 'POST',
+            url: form[0].action,
+            followRedirect: false,
+            body: {
+                username: username,
+            },
+          }).then(function (response) {
+            const html = document.createElement('html');
+            html.innerHTML = response.body;
+
+            const form = html.getElementsByTagName('form');
+            return cy.request({
+                method: "POST",
+                url: form[0].action,
+                followRedirect: false,
+                form: true,
+                body: {
+                    credentialId: "",
+                    password: password
+                }
+            });
+        });
+      })
+);

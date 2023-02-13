@@ -34,6 +34,15 @@ declare namespace Cypress {
       redirect_uri,
       kc_idp_hint,
     }: Login): Chainable;
+    loginHID({
+      root,
+      realm,
+      username,
+      password,
+      client_id,
+      redirect_uri,
+      kc_idp_hint,
+    }: Login): Chainable;
     loginOTP({
       root,
       realm,
